@@ -1,17 +1,12 @@
-## Testing a Container environment with Kafka brokers 
 
+Nginix container as web server verifying request-response of Kafka based microservice
+ 
 
-Test and provide reports verifying kafka topics, streams and topics. Verify that jwt tokens and authorization pass security checks.
-
-Sample test case for graceful shutdown based on: 
-https://github.com/testcontainers/testcontainers-java/issues/1000
-https://www.youtube.com/watch?v=T_huohVhYes
+Graceful shutdown case based on:
+  testcontainers / docker issue and Testguild podcast interview of found Sergei Ergorov   
+  https://github.com/testcontainers/testcontainers-java/issues/1000
+  https://www.youtube.com/watch?v=T_huohVhYes
 
 
  Kafka stream metrics
   https://github.com/nginxinc/nginx-prometheus-exporter
-
-Reports to measure reliability:
-
-
-Confluent cloud, docker and Java used to test. 
