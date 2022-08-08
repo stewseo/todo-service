@@ -1,12 +1,7 @@
-
-Nginix container as web server verifying request-response of Kafka based microservice
- 
-
-Graceful shutdown case based on:
-  testcontainers / docker issue and Testguild podcast interview of found Sergei Ergorov   
-  https://github.com/testcontainers/testcontainers-java/issues/1000
-  https://www.youtube.com/watch?v=T_huohVhYes
+Test Kafka Streams 
+https://www.confluent.io/blog/testing-kafka-streams/
 
 
- Kafka stream metrics
-  https://github.com/nginxinc/nginx-prometheus-exporter
+Test Bindings
+https://docs.aklivity.io/zilla/reference/zilla.json/binding
+
