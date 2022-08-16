@@ -19,14 +19,12 @@
         </repository>
     </repositories>
 
-
     <pluginRepositories>
         <pluginRepository>
             <id>aklivity</id>
             <url>https://maven.packages.aklivity.io/</url>
         </pluginRepository>
     </pluginRepositories>
-
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -35,6 +33,9 @@
         <checkstyle.config.location>io/aklivity/zilla/conf/checkstyle/configuration.xml</checkstyle.config.location>
         <checkstyle.suppressions.location>io/aklivity/zilla/conf/checkstyle/suppressions.xml</checkstyle.suppressions.location>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <logback.classic.version>1.2.11</logback.classic.version>
+        <logstash.version>7.2</logstash.version>
+        <logback.json.version>0.1.5</logback.json.version>
         <kafka.version>3.1.0</kafka.version>
     </properties>
 
@@ -45,7 +46,15 @@
         <relativePath/>
     </parent>
 
-    <dependencies>
+
+
+        <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.9.0</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
@@ -59,6 +68,12 @@
             <artifactId>lombok</artifactId>
             <version>1.18.24</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.12.3</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.apache.kafka</groupId>
@@ -139,12 +154,35 @@
         </dependency>
 
         <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>Kafka</artifactId>
-            <version>1.17.3</version>
-            <scope>test</scope>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.classic.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>ch.qos.logback.contrib</groupId>
+            <artifactId>logback-json-classic</artifactId>
+            <version>${logback.json.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback.contrib</groupId>
+            <artifactId>logback-jackson</artifactId>
+            <version>${logback.json.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>${logstash.version}</version>
+        </dependency>
+            <dependency>
+                <groupId>jakarta.json</groupId>
+                <artifactId>jakarta.json-api</artifactId>
+                <version>2.1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>co.elastic.clients</groupId>
+                <artifactId>elasticsearch-java</artifactId>
+                <version>8.3.3</version>
+            </dependency>
     </dependencies>
 
     <profiles>
@@ -155,23 +193,10 @@
             </activation>
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>prepare-agent</id>
-                                <goals>
-                                    <goal>prepare-agent</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
                 </plugins>
             </build>
         </profile>
     </profiles>
-
 
     <build>
         <plugins>
@@ -221,49 +246,45 @@
                     <target>15</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.sonarsource.scanner.maven</groupId>
-                <artifactId>sonar-maven-plugin</artifactId>
-                <version>3.7.0.1746</version>
-            </plugin>
+
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.6</version>
             </plugin>
-            <plugin>
-                <groupId>com.mycila</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <version>4.1</version>
-                <configuration>
-                    <header>COPYRIGHT</header>
-                    <properties>
-                        <copyrightYears>${project.inceptionYear}-2022</copyrightYears>
-                    </properties>
-                    <includes>
-                        <include>src/**</include>
-                    </includes>
-                    <excludes>
-                        <exclude>src/conf/**</exclude>
-                        <exclude>src/**/*.btm</exclude>
-                    </excludes>
-                    <mapping>
-                        <g4>SLASHSTAR_STYLE</g4>
-                        <idl>SLASHSTAR_STYLE</idl>
-                        <rpt>SCRIPT_STYLE</rpt>
-                    </mapping>
-                    <failIfUnknown>true</failIfUnknown>
-                    <failIfMissing>true</failIfMissing>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>com.mycila</groupId>-->
+<!--                <artifactId>license-maven-plugin</artifactId>-->
+<!--                <version>4.1</version>-->
+<!--                <configuration>-->
+<!--                    <header>COPYRIGHT</header>-->
+<!--                    <properties>-->
+<!--                        <copyrightYears>${project.inceptionYear}-2022</copyrightYears>-->
+<!--                    </properties>-->
+<!--                    <includes>-->
+<!--                        <include>src/**</include>-->
+<!--                    </includes>-->
+<!--                    <excludes>-->
+<!--                        <exclude>src/conf/**</exclude>-->
+<!--                        <exclude>src/**/*.btm</exclude>-->
+<!--                    </excludes>-->
+<!--                    <mapping>-->
+<!--                        <g4>SLASHSTAR_STYLE</g4>-->
+<!--                        <idl>SLASHSTAR_STYLE</idl>-->
+<!--                        <rpt>SCRIPT_STYLE</rpt>-->
+<!--                    </mapping>-->
+<!--                    <failIfUnknown>true</failIfUnknown>-->
+<!--                    <failIfMissing>true</failIfMissing>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>validate</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>check</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 
